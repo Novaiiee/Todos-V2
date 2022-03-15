@@ -1,22 +1,22 @@
 import { IsArray, IsDateString, IsOptional, IsString } from "class-validator";
 
 export class CreateTodoDTO {
-	@IsString()
+	@IsString({ message: "Todo name not provided" })
 	name: string;
 
-	@IsArray()
+	@IsArray({ message: "Todo labels is not an Array" })
 	@IsOptional()
 	labels: string[];
 
 	@IsOptional()
-	@IsDateString()
+	@IsDateString({}, { message: "Date is not of IsISO8601 Format" })
 	dueDate: string;
 
-	@IsArray()
+	@IsArray({ message: "Todo lists is not an Array" })
 	@IsOptional()
 	lists: string[];
 
-	@IsString()
+	@IsString({ message: "Todo content is not a string" })
 	@IsOptional()
 	content: string;
 }

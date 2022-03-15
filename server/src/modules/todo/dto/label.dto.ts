@@ -1,9 +1,9 @@
 import { IsArray, IsString } from "class-validator";
 
 export class LabelDTO {
-  @IsArray()
-  labels: string[];
+	@IsArray({ message: "Labels array is not provided" })
+	labels: string[];
 
-  @IsString()
-  id: string;
+	@IsString({ message: "ID not provided" })
+	id: string;
 }

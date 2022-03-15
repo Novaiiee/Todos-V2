@@ -1,9 +1,9 @@
 import { IsArray, IsString } from "class-validator";
 
 export class ListDTO {
-	@IsArray()
+	@IsArray({ message: "Lists array is not provided" })
 	lists: string[];
 
-	@IsString()
+	@IsString({ message: "ID not provided" })
 	id: string;
 }

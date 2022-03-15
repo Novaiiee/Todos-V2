@@ -1,9 +1,9 @@
-import { IsDate, IsDateString, IsString } from "class-validator";
+import { IsDateString, IsString } from "class-validator";
 
 export class ChangeDueDateDTO {
-	@IsDateString()
+	@IsDateString({}, { message: "Date is not of IsISO8601 Format" })
 	date: string;
 
-	@IsString()
+	@IsString({ message: "ID not provided" })
 	id: string;
 }
