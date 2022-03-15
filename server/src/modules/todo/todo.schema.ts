@@ -17,7 +17,7 @@ export class Todo {
 	labels: string[];
 
 	@Prop({ default: [], type: () => [String] })
-	lists: string;
+	lists: string[];
 
 	@Prop({ type: MongooseSchema.Types.ObjectId, ref: "User" })
 	user: User;
