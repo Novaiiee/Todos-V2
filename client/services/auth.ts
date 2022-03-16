@@ -1,10 +1,5 @@
-import { User } from "../types/user";
+import { Credentials, User } from "../types/user";
 import { axios } from "./axios";
-
-export interface Credentials {
-	email: string;
-	password: string;
-}
 
 interface UserAuthResponse {
 	user: User;
