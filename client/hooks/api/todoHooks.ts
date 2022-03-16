@@ -1,13 +1,15 @@
-import { MutationFunction, useMutation } from "react-query";
+import { MutationFunction, useMutation, useQuery } from "react-query";
 import { client } from "../../services/react-query";
 import {
 	fetchAddLabel,
 	fetchAddList,
+	fetchAllTodos,
 	fetchCreateTodo,
 	fetchDeleteTodo,
 	fetchRemoveLabel,
 	fetchRemoveList,
 	fetchSetStatus,
+	fetchTodo,
 } from "../../services/todo";
 import { LabelDTO, ListDTO, SetStatusDTO, Todo } from "../../types/todo";
 
@@ -38,6 +40,18 @@ export function useDeleteTodoMutation() {
 				return todos.filter((todo) => todo._id !== id);
 			});
 		},
+	});
+}
+
+export function useAllTodosQuery() {
+	return useQuery(["todos"], {
+		queryFn: fetchAllTodos,
+	});
+}
+
+export function useTodoQuery(id: string) {
+	return useQuery(["todo", id], {
+		queryFn: (ctx) => fetchTodo(ctx.queryKey[1]),
 	});
 }
 
