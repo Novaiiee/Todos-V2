@@ -13,7 +13,7 @@ import {
 	ModalOverlay,
 	Spacer,
 	useDisclosure,
-	VStack,
+	VStack
 } from "@chakra-ui/react";
 import { Field, Formik } from "formik";
 import { FC } from "react";
@@ -21,7 +21,6 @@ import { GoogleLoginResponse, GoogleLoginResponseOffline, useGoogleLogin } from 
 import { MoonLoader } from "react-spinners";
 import { useLoginMutation, useLoginWithGoogleMutation } from "../../hooks/api/authHooks";
 import { useAppStore } from "../../stores/useAppStore";
-import { Credentials } from "../../types/user";
 import { AuthSchema } from "../../utils/authSchema";
 
 export const LoginModal: FC = () => {
@@ -46,11 +45,6 @@ export const LoginModal: FC = () => {
 		onClose: toggleLoginModal,
 	});
 
-	const onSubmit = (data: Credentials) => {
-		console.log(data);
-		login.mutate(data);
-	};
-
 	return (
 		<>
 			<Button onClick={onOpen}>Login</Button>
@@ -64,7 +58,7 @@ export const LoginModal: FC = () => {
 					<Formik
 						initialValues={{ email: "", password: "" }}
 						validationSchema={AuthSchema}
-						onSubmit={onSubmit}
+						onSubmit={(data) => login.mutate(data)}
 					>
 						{({ errors, handleSubmit }) => (
 							<form onSubmit={handleSubmit}>
