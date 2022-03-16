@@ -13,7 +13,7 @@ import {
 	ModalOverlay,
 	Spacer,
 	useDisclosure,
-	VStack
+	VStack,
 } from "@chakra-ui/react";
 import { Field, Formik } from "formik";
 import { FC } from "react";
@@ -90,6 +90,7 @@ export const LoginModal: FC = () => {
 								</ModalBody>
 								<ModalFooter>
 									<MoonLoader loading={loginWithGoogle.isLoading || login.isLoading} size={40} />
+									<FormErrorMessage>{login.isError && "Invalid Email or Password"}</FormErrorMessage>
 									<Spacer />
 									<Button variant="outline" onClick={signIn} mr={3}>
 										Login with Google

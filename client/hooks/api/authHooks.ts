@@ -7,9 +7,6 @@ import { useAppStore } from "../../stores/useAppStore";
 export function useLoginMutation() {
 	return useMutation({
 		mutationFn: fetchLogin,
-		onError: (err) => {
-			console.log(err);
-		},
 		onSuccess: (data) => {
 			Cookies.set("JWT_ACCESS_TOKEN", data.token);
 			client.setQueryData("user", data.user);
