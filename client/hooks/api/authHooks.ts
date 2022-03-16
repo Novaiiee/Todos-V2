@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { useMutation, useQuery } from "react-query";
-import { fetchLogin, fetchLoginWithGoogle, fetchRegister } from "../../services/auth";
+import { fetchLogin, fetchLoginWithGoogle, fetchRegister, fetchUser } from "../../services/auth";
+import { client } from "../../services/react-query";
 
 export function useLoginMutation() {
 	return useMutation({
@@ -10,6 +11,7 @@ export function useLoginMutation() {
 		},
 		onSuccess: (data) => {
 			Cookies.set("JWT_ACCESS_TOKEN", data.token);
+			client.setQueryData("user", data.user);
 		},
 	});
 }
@@ -21,9 +23,8 @@ export function useLoginWithGoogleMutation() {
 			console.log(err);
 		},
 		onSuccess: (data) => {
-      console.log(data);
-      
 			Cookies.set("JWT_ACCESS_TOKEN", data.token);
+			client.setQueryData("user", data.user);
 		},
 	});
 }
@@ -36,12 +37,13 @@ export function useRegisterMutation() {
 		},
 		onSuccess: (data) => {
 			Cookies.set("JWT_ACCESS_TOKEN", data.token);
+			client.setQueryData("user", data.user);
 		},
 	});
 }
 
 export function useUserQuery() {
-	return useQuery(["user", ""], {
-		queryFn: (a) => fetchLoginWithGoogle(a.queryKey[0]),
+	return useQuery(["user"], {
+		queryFn: (a) => fetchUser(),
 	});
 }

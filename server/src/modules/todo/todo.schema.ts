@@ -10,6 +10,9 @@ export class Todo {
 	@Prop({ default: "" })
 	content: string;
 
+	@Prop({ default: false })
+	completed: boolean;
+
 	@Prop({ default: "" })
 	dueDate: string;
 

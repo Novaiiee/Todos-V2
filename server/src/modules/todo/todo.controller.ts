@@ -6,6 +6,7 @@ import { ChangeDueDateDTO } from "./dto/change-date.dto";
 import { CreateTodoDTO } from "./dto/create-todo.dto";
 import { LabelDTO } from "./dto/label.dto";
 import { ListDTO } from "./dto/list.dto";
+import { SetStatusDTO } from "./dto/set-status.dto";
 import { TodoService } from "./todo.service";
 
 @Controller("todo")
@@ -72,6 +73,13 @@ export class TodoController {
 	@Put("/change-date")
 	async changeDueDate(@CurrentUser() user: UserDocument, @Body() data: ChangeDueDateDTO) {
 		const todo = await this.todoService.changeDueDate(data, user);
+		return { todo };
+	}
+
+	@UseGuards(JwtGuard)
+	@Put("/set-status")
+	async setTodoStatus(@CurrentUser() user: UserDocument, @Body() data: SetStatusDTO) {
+		const todo = await this.todoService.setTodoStatus(data, user);
 		return { todo };
 	}
 }

@@ -6,6 +6,7 @@ import { ChangeDueDateDTO } from "./dto/change-date.dto";
 import { CreateTodoDTO } from "./dto/create-todo.dto";
 import { LabelDTO } from "./dto/label.dto";
 import { ListDTO } from "./dto/list.dto";
+import { SetStatusDTO } from "./dto/set-status.dto";
 import { Todo, TodoDocument } from "./todo.schema";
 
 @Injectable()
@@ -89,6 +90,17 @@ export class TodoService {
 		}
 
 		todo.dueDate = data.date;
+		return todo.populate("user").then((todo) => todo.save());
+	}
+
+	async setTodoStatus(data: SetStatusDTO, user: UserDocument) {
+		const todo = await this.todoModel.findOne({ user: user.id, id: data.id });
+
+		if (!todo) {
+			throw new NotFoundException("Todo not found");
+		}
+
+		todo.completed = data.status;
 		return todo.populate("user").then((todo) => todo.save());
 	}
 }
