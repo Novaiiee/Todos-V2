@@ -20,6 +20,8 @@ export function useCreateTodoMutation() {
 			console.log(err);
 		},
 		onSuccess: (data) => {
+			console.log(data);
+			
 			client.setQueryData<Todo[]>("todos", (todos) => {
 				if (todos) return [...todos, data];
 				return [data];

@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import Router from "next/router";
 import { useMutation, useQuery } from "react-query";
 import { fetchLogin, fetchLoginWithGoogle, fetchRegister, fetchUser } from "../../services/auth";
 import { client } from "../../services/react-query";
@@ -10,7 +11,9 @@ export function useLoginMutation() {
 		onSuccess: (data) => {
 			Cookies.set("JWT_ACCESS_TOKEN", data.token);
 			client.setQueryData("user", data.user);
+			
 			useAppStore.getState().toggleLoginModal();
+			Router.push("/todos");
 		},
 	});
 }
@@ -26,6 +29,7 @@ export function useLoginWithGoogleMutation() {
 			client.setQueryData("user", data.user);
 
 			useAppStore.getState().toggleLoginModal();
+			Router.push("/todos");
 		},
 	});
 }
@@ -39,7 +43,9 @@ export function useRegisterMutation() {
 		onSuccess: (data) => {
 			Cookies.set("JWT_ACCESS_TOKEN", data.token);
 			client.setQueryData("user", data.user);
+
 			useAppStore.getState().toggleRegisterModal();
+			Router.push("/todos");
 		},
 	});
 }
@@ -47,5 +53,6 @@ export function useRegisterMutation() {
 export function useUserQuery() {
 	return useQuery(["user"], {
 		queryFn: (a) => fetchUser(),
+		enabled: false
 	});
 }
