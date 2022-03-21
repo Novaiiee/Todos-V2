@@ -1,4 +1,4 @@
-import { Flex, HStack, Text } from "@chakra-ui/react";
+import { Box, Group, Text } from "@mantine/core";
 import { FC } from "react";
 import { useUserQuery } from "../../hooks/api/authHooks";
 import { LoginModal } from "../auth/LoginModal";
@@ -7,15 +7,17 @@ export const Navbar: FC = () => {
 	const { data: user } = useUserQuery();
 
 	return (
-		<Flex justify={"space-between"} px="32" py="5" w="full" bg="gray.700" color="white">
-			<Flex align="center">
-				<Text as="h1" fontWeight={500}>
-					Todo-V2
-				</Text>
-			</Flex>
-			<HStack align="center" spacing={4}>
-				{!user && <LoginModal />}
-			</HStack>
-		</Flex>
+		<Box color="white" sx={(theme) => ({ backgroundColor: theme.black })} px={20} py={20}>
+			<Group position="apart" align="center">
+				<Group>
+					<Text size={"xl"} color="white" weight="bold">
+						Todo-V2
+					</Text>
+				</Group>
+				<Group align="center" spacing={4}>
+					{!user && <LoginModal />}
+				</Group>
+			</Group>
+		</Box>
 	);
 };

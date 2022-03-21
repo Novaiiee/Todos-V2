@@ -8,9 +8,9 @@ const Home: NextPage = () => {
 			<Head>
 				<title>TodosV2</title>
 			</Head>
-			<div>
+			<>
 				<Navbar />
-			</div>
+			</>
 		</>
 	);
 };

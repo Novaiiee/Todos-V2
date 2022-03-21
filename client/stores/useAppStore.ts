@@ -3,6 +3,7 @@ import create from "zustand";
 interface AppStore {
 	isLoginModalOpen: boolean;
 	isRegisterModalOpen: boolean;
+	
 	toggleLoginModal: () => void;
 	toggleRegisterModal: () => void;
 }

@@ -1,32 +1,20 @@
-import {
-	Button,
-	FormControl,
-	FormErrorMessage,
-	FormLabel,
-	Input,
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
-	Spacer,
-	useDisclosure,
-	VStack,
-} from "@chakra-ui/react";
-import { Field, Formik } from "formik";
-import { FC } from "react";
+import { Button, Group, LoadingOverlay, Modal, TextInput } from "@mantine/core";
+import { useForm, yupResolver } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import { useNotifications } from "@mantine/notifications";
+import { FC, useEffect } from "react";
 import { GoogleLoginResponse, GoogleLoginResponseOffline, useGoogleLogin } from "react-google-login";
-import { MoonLoader } from "react-spinners";
 import { useLoginMutation, useLoginWithGoogleMutation } from "../../hooks/api/authHooks";
 import { useAppStore } from "../../stores/useAppStore";
+import { useErrorStore } from "../../stores/useErrorStore";
+import { Credentials } from "../../types/user";
 import { AuthSchema } from "../../utils/authSchema";
 
 export const LoginModal: FC = () => {
 	const toggleLoginModal = useAppStore((state) => state.toggleLoginModal);
-	const isLoginModalOpen = useAppStore((state) => state.isLoginModalOpen);
+	const loginError = useErrorStore((state) => state.loginError);
 
+	const [opened, handlers] = useDisclosure(false, { onOpen: toggleLoginModal, onClose: toggleLoginModal });
 	const loginWithGoogle = useLoginWithGoogleMutation();
 	const login = useLoginMutation();
 
@@ -38,71 +26,47 @@ export const LoginModal: FC = () => {
 		},
 	});
 
-	const { isOpen, onOpen, onClose } = useDisclosure({
-		defaultIsOpen: false,
-		onOpen: toggleLoginModal,
-		isOpen: isLoginModalOpen,
-		onClose: toggleLoginModal,
+	const form = useForm<Credentials>({
+		initialValues: {
+			email: "",
+			password: "",
+		},
+		schema: yupResolver(AuthSchema),
 	});
+
+	const onSubmit = (values: Credentials) => {
+		login.mutate(values);
+	};
 
 	return (
 		<>
-			<Button onClick={onOpen}>Login</Button>
-			<Modal isOpen={isOpen} onClose={onClose} blockScrollOnMount isCentered>
-				<ModalOverlay />
-				<ModalContent maxW="40%" maxH="50%">
-					<ModalHeader fontWeight="bold" fontSize="2xl">
-						Login
-					</ModalHeader>
-					<ModalCloseButton />
-					<Formik
-						initialValues={{ email: "", password: "" }}
-						validationSchema={AuthSchema}
-						onSubmit={(data) => login.mutate(data)}
-					>
-						{({ errors, handleSubmit }) => (
-							<form onSubmit={handleSubmit}>
-								<ModalBody>
-									<VStack spacing={8}>
-										<FormControl w="full" isInvalid={!!errors.email}>
-											<FormLabel htmlFor="email">Email</FormLabel>
-											<Field
-												as={Input}
-												id="email"
-												type="email"
-												name="email"
-												placeholder="Ex. johndoe@gmail.com"
-											/>
-											<FormErrorMessage>{errors.email}</FormErrorMessage>
-										</FormControl>
-										<FormControl isInvalid={!!errors.password} w="full">
-											<FormLabel htmlFor="password">Password</FormLabel>
-											<Field
-												as={Input}
-												id="password"
-												type="password"
-												name="password"
-												placeholder="Minimum of 6 Characters"
-											/>
-											<FormErrorMessage>{errors.password}</FormErrorMessage>
-										</FormControl>
-									</VStack>
-								</ModalBody>
-								<ModalFooter>
-									<MoonLoader loading={loginWithGoogle.isLoading || login.isLoading} size={40} />
-									<FormErrorMessage>{login.isError && "Invalid Email or Password"}</FormErrorMessage>
-									<Spacer />
-									<Button variant="outline" onClick={signIn} mr={3}>
-										Login with Google
-									</Button>
-									<Button type="submit">Login</Button>
-									<input type="submit" value="" />
-								</ModalFooter>
-							</form>
-						)}
-					</Formik>
-				</ModalContent>
+			<Modal opened={opened} onClose={handlers.close} title="Login" centered>
+				<form onSubmit={form.onSubmit(onSubmit)}>
+					<LoadingOverlay visible={login.isLoading || loginWithGoogle.isLoading} />
+					<Group grow spacing={30} direction="column">
+						<TextInput
+							label="Email:"
+							placeholder="Ex. johndoe@example.com"
+							{...form.getInputProps("email")}
+						/>
+						<TextInput
+							error={loginError}
+							label="Password:"
+							type="password"
+							{...form.getInputProps("password")}
+						/>
+						<Group position="apart">
+							<Button variant="light" onClick={signIn}>
+								Login With Google
+							</Button>
+							<Button type="submit">Submit</Button>
+						</Group>
+					</Group>
+				</form>
 			</Modal>
+			<Group position="center">
+				<Button onClick={handlers.toggle}>Login</Button>
+			</Group>
 		</>
 	);
 };
