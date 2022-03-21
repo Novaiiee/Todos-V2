@@ -1,20 +1,3 @@
-import {
-	Box,
-	Button,
-	FormLabel,
-	HStack,
-	Input,
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
-	Textarea,
-	useDisclosure,
-	VStack,
-} from "@chakra-ui/react";
 import { FC, FormEvent, useState } from "react";
 import DatePicker from "react-datepicker";
 import { Tag, WithContext as ReactTags } from "react-tag-input";
@@ -28,7 +11,6 @@ const KeyCodes = {
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
 export const CreateTodoModal: FC = () => {
-	const { isOpen, onOpen, onClose } = useDisclosure();
 	const createTodo = useCreateTodoMutation();
 
 	const [startDate, setStartDate] = useState(new Date());
@@ -52,7 +34,7 @@ export const CreateTodoModal: FC = () => {
 
 	return (
 		<>
-			<Button onClick={onOpen}>Create</Button>
+			{/* <Button onClick={onOpen}>Create</Button>
 			<Modal isOpen={isOpen} onClose={onClose} blockScrollOnMount isCentered>
 				<ModalOverlay />
 				<ModalContent maxW="40%" maxH="90%">
@@ -104,7 +86,7 @@ export const CreateTodoModal: FC = () => {
 						</ModalFooter>
 					</form>
 				</ModalContent>
-			</Modal>
+			</Modal> */}
 		</>
 	);
 };
