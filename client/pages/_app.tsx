@@ -1,16 +1,22 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { MantineProvider } from "@mantine/core";
 import type { AppProps } from "next/app";
 import { QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { client } from "../services/react-query";
-import "react-datepicker/dist/react-datepicker.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<QueryClientProvider client={client}>
-			<ChakraProvider>
+			<MantineProvider
+				withGlobalStyles
+				withNormalizeCSS
+				theme={{
+					/** Put your mantine theme override here */
+					colorScheme: "light",
+				}}
+			>
 				<Component {...pageProps} />
-			</ChakraProvider>
+			</MantineProvider>
 			<ReactQueryDevtools initialIsOpen={false} />
 		</QueryClientProvider>
 	);
