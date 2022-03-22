@@ -4,7 +4,7 @@ import { useUserQuery } from "../../hooks/api/authHooks";
 import { LoginModal } from "../auth/LoginModal";
 
 export const Navbar: FC = () => {
-	const { data: user } = useUserQuery();
+	const { data: user } = useUserQuery(false);
 
 	return (
 		<Box color="white" sx={(theme) => ({ backgroundColor: theme.black })} px={20} py={20}>
