@@ -1,18 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TodoController } from '../todo.controller';
+import { Test, TestingModule } from "@nestjs/testing";
+import { TodoController } from "../todo.controller";
+import { TodoService } from "../todo.service";
 
-describe('TodoController', () => {
-  let controller: TodoController;
+jest.mock("../todo.service");
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [TodoController],
-    }).compile();
+describe("AuthController", () => {
+	let controller: TodoController;
+	let service: TodoService;
 
-    controller = module.get<TodoController>(TodoController);
-  });
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			controllers: [TodoController],
+			providers: [TodoService],
+		}).compile();
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+		controller = module.get<TodoController>(TodoController);
+		service = module.get<TodoService>(TodoService);
+
+		jest.clearAllMocks();
+	});
+
+	it("Should be defined", () => {
+		expect(controller).toBeDefined();
+	});
 });
