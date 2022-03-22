@@ -1,23 +1,38 @@
-import { FC, FormEvent, useState } from "react";
-import DatePicker from "react-datepicker";
-import { Tag, WithContext as ReactTags } from "react-tag-input";
+import { Button, Group, Modal, MultiSelect, SelectItem, Textarea, TextInput } from "@mantine/core";
+import { DatePicker } from "@mantine/dates";
+import { useDisclosure, useInputState } from "@mantine/hooks";
+import { FC, FormEvent } from "react";
+import { useUserQuery } from "../../hooks/api/authHooks";
 import { useCreateTodoMutation } from "../../hooks/api/todoHooks";
+import { useCreateLabelMutation, useCreateListMutation } from "../../hooks/api/userHooks";
+import { useAppStore } from "../../stores/useAppStore";
 
-const KeyCodes = {
-	comma: 188,
-	enter: 13,
+const firstCharToUpper = (str: string) => str[0].toUpperCase() + str.substring(1, str.length);
+
+const mapSelectItems = (array: string[]): SelectItem[] => {
+	return array.map((value) => ({ value, label: firstCharToUpper(value) }));
 };
 
-const delimiters = [KeyCodes.comma, KeyCodes.enter];
-
 export const CreateTodoModal: FC = () => {
-	const createTodo = useCreateTodoMutation();
+	const toggleCreateTodoModal = useAppStore((state) => state.toggleCreateTodoModal);
+	const isCreateTodoModalOpen = useAppStore((state) => state.isCreateTodoModalOpen);
 
-	const [startDate, setStartDate] = useState(new Date());
-	const [name, setName] = useState("");
-	const [content, setContent] = useState("");
-	const [labels, setLabels] = useState<Tag[]>([]);
-	const [lists, setLists] = useState<Tag[]>([]);
+	const { data: user } = useUserQuery(true);
+
+	const [opened, handlers] = useDisclosure(false, {
+		onOpen: toggleCreateTodoModal,
+		onClose: toggleCreateTodoModal,
+	});
+
+	const [name, setName] = useInputState("");
+	const [content, setContent] = useInputState("");
+	const [dueDate, setDueDate] = useInputState(new Date());
+	const [labels, setLabels] = useInputState<SelectItem[]>(mapSelectItems(user?.labels ?? []));
+	const [lists, setLists] = useInputState<SelectItem[]>(mapSelectItems(user?.labels ?? []));
+
+	const createTodo = useCreateTodoMutation();
+	const createLabel = useCreateLabelMutation();
+	const createList = useCreateListMutation();
 
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -26,67 +41,65 @@ export const CreateTodoModal: FC = () => {
 			name,
 			completed: false,
 			content,
-			dueDate: startDate.toJSON(),
-			labels: labels.map((t) => t.text),
-			lists: lists.map((t) => t.text),
+			dueDate: dueDate.toJSON(),
+			labels: labels.map((t) => t.label!),
+			lists: lists.map((t) => t.label!),
 		});
+	};
+
+	const onLabelCreation = (label: string) => {
+		setLabels([...labels, { value: label, label: firstCharToUpper(label) }]);
+		createLabel.mutate(label);
+	};
+
+	const onListCreation = (list: string) => {
+		setLists([...lists, { value: list, label: firstCharToUpper(list) }]);
+		createList.mutate(list);
 	};
 
 	return (
 		<>
-			{/* <Button onClick={onOpen}>Create</Button>
-			<Modal isOpen={isOpen} onClose={onClose} blockScrollOnMount isCentered>
-				<ModalOverlay />
-				<ModalContent maxW="40%" maxH="90%">
-					<form onSubmit={onSubmit}>
-						<ModalHeader fontWeight="bold" fontSize="2xl">
-							Create Todo
-						</ModalHeader>
-						<ModalCloseButton />
-						<ModalBody>
-							<VStack spacing={6} w="full">
-								<Box w="full">
-									<FormLabel>Name:</FormLabel>
-									<Input value={name} onChange={(e) => setName(e.target.value)} />
-								</Box>
-								<Box w="full">
-									<FormLabel>Content:</FormLabel>
-									<Textarea value={content} onChange={(e) => setContent(e.target.value)} />
-								</Box>
-								<HStack spacing={20} w="full" justify="space-between">
-									<FormLabel>Due Date:</FormLabel>
-									<DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
-								</HStack>
-								<Box w="full">
-									<FormLabel>Labels</FormLabel>
-									<ReactTags
-										tags={labels}
-										delimiters={delimiters}
-										inputFieldPosition="bottom"
-										autocomplete
-										handleDelete={(i) => setLabels(labels.filter((_, index) => index !== i))}
-										handleAddition={(tag) => setLabels([...labels, tag])}
-									/>
-								</Box>
-								<Box w="full">
-									<FormLabel>Lists</FormLabel>
-									<ReactTags
-										tags={lists}
-										delimiters={delimiters}
-										inputFieldPosition="bottom"
-										autocomplete
-										handleDelete={(i) => setLists(lists.filter((_, index) => index !== i))}
-										handleAddition={(tag) => setLists([...lists, tag])}
-									/>
-								</Box>
-							</VStack>
-						</ModalBody>
-						<ModalFooter>
-							<Button type="submit">Submit</Button>
-						</ModalFooter>
-					</form>
-				</ModalContent>
-			</Modal> */}
+			<Modal opened={isCreateTodoModalOpen} onClose={handlers.close} title="Create a Todo">
+				<form onSubmit={onSubmit}>
+					<Group grow direction="column" spacing={35}>
+						<Group spacing={10} grow>
+							<TextInput required value={name} onChange={setName} label="Name:" />
+							<DatePicker value={dueDate} onChange={setDueDate} label="Due Date:" />
+						</Group>
+						<Group grow>
+							<Textarea autosize maxRows={13} value={content} onChange={setContent} label="Content:" />
+						</Group>
+						<Group spacing={10} direction="column" grow>
+							<MultiSelect
+								label="Labels"
+								placeholder="Type a label to create it"
+								data={labels}
+								searchable
+								nothingFound="Nothing found"
+								creatable
+								getCreateLabel={(query) => `+ Create ${query}`}
+								onCreate={onLabelCreation}
+							/>
+							<MultiSelect
+								label="Lists"
+								placeholder="Type a list name to create it"
+								data={lists}
+								searchable
+								nothingFound="Nothing found"
+								creatable
+								getCreateLabel={(query) => `+ Create ${query}`}
+								onCreate={onListCreation}
+							/>
+						</Group>
+						<Group grow>
+							<Button type="submit">Create</Button>
+						</Group>
+					</Group>
+				</form>
+			</Modal>
+			<Group position="center">
+				<Button onClick={handlers.toggle}>Open Modal</Button>
+			</Group>
 		</>
 	);
 };

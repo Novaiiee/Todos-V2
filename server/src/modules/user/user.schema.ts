@@ -8,6 +8,12 @@ export class User {
 
 	@Prop()
 	password: string;
+
+	@Prop({ type: () => [String], default: [] })
+	labels: string[];
+
+	@Prop({ type: () => [String], default: [] })
+	lists: string[];
 }
 
 export type UserDocument = User & Document;

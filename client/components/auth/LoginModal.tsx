@@ -1,8 +1,7 @@
 import { Button, Group, LoadingOverlay, Modal, TextInput } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { useNotifications } from "@mantine/notifications";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { GoogleLoginResponse, GoogleLoginResponseOffline, useGoogleLogin } from "react-google-login";
 import { useLoginMutation, useLoginWithGoogleMutation } from "../../hooks/api/authHooks";
 import { useAppStore } from "../../stores/useAppStore";

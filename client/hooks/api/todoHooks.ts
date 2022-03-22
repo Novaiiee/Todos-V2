@@ -11,6 +11,7 @@ import {
 	fetchSetStatus,
 	fetchTodo,
 } from "../../services/todo";
+import { useAppStore } from "../../stores/useAppStore";
 import { LabelDTO, ListDTO, SetStatusDTO, Todo } from "../../types/todo";
 
 export function useCreateTodoMutation() {
@@ -20,12 +21,12 @@ export function useCreateTodoMutation() {
 			console.log(err);
 		},
 		onSuccess: (data) => {
-			console.log(data);
-			
 			client.setQueryData<Todo[]>("todos", (todos) => {
 				if (todos) return [...todos, data];
 				return [data];
 			});
+
+			useAppStore.getState().toggleCreateTodoModal();
 		},
 	});
 }
@@ -86,73 +87,3 @@ export const useRemoveTodoLabelMutation = createTodoHook<LabelDTO>(fetchRemoveLa
 export const useAddTodoListMutation = createTodoHook<ListDTO>(fetchAddList);
 export const useRemoveTodoListMutation = createTodoHook<LabelDTO>(fetchRemoveList);
 export const useSetTodoStatusMutation = createTodoHook<SetStatusDTO>(fetchSetStatus);
-
-// export function useAddTodoLabelMutation() {
-// 	return useMutation({
-// 		mutationFn: fetchAddLabel,
-// 		onError: (err) => {
-// 			console.log(err);
-// 		},
-// 		onSuccess: (data) => {
-// 			client.setQueryData<Todo[]>("todos", (todos) => {
-// 				if (!todos) return [];
-
-// 				return todos.map((todo) => {
-// 					if (todo._id === data._id) {
-// 						return data;
-// 					}
-
-// 					return todo;
-// 				});
-// 			});
-// 		},
-// 	});
-// }
-
-// export function useRemoveTodoLabelMutation() {
-// 	return useMutation({
-// 		mutationFn: fetchRemoveLabel,
-// 		onError: (err) => {
-// 			console.log(err);
-// 		},
-// 		onSuccess: (data) => {
-// 			client.setQueryData<Todo[]>("todos", (todos) => {
-// 				if (!todos) return [];
-
-// 				return todos.map((todo) => {
-// 					if (todo._id === data._id) {
-// 						return data;
-// 					}
-
-// 					return todo;
-// 				});
-// 			});
-// 		},
-// 	});
-// }
-// export function useRemoveTodoListMutation() {
-// 	return useMutation({
-// 		mutationFn: fetchRemoveLabel,
-// 		onError: (err) => {
-// 			console.log(err);
-// 		},
-// 		onSuccess: (data) => {
-// 			client.setQueryData<Todo[]>("todos", (todos) => {
-// 				if (!todos) return [];
-
-// 				return todos.map((todo) => {
-// 					if (todo._id === data._id) {
-// 						return data;
-// 					}
-
-// 					return todo;
-// 				});
-// 			});
-// 		},
-// 	});
-// }
-// export function useUserQuery() {
-// 	return useQuery(["user"], {
-// 		queryFn: (a) => fetchUser(),
-// 	});
-// }

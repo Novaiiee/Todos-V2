@@ -1,6 +1,8 @@
 export interface User {
   email: string;
   password: string;
+  labels: string[];
+  lists: string[];
   _id: string;
 }
 

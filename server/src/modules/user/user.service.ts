@@ -36,4 +36,14 @@ export class UserService {
 	async create(data: CreateUserDTO) {
 		return this.userModel.create(data);
 	}
+
+	async createLabel(label: string, user: UserDocument) {
+		user.labels = Array.from(new Set([...user.labels, label]));
+		return user.save();
+	}
+
+	async createList(list: string, user: UserDocument) {
+		user.lists = Array.from(new Set([...user.labels, list]));
+		return user.save();
+	}
 }
