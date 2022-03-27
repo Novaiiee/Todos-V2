@@ -1,10 +1,18 @@
+import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { UserDocument } from "../../user/user.schema";
+import { sign } from "jsonwebtoken";
+import { User, UserDocument } from "../../user/user.schema";
 import { AuthController } from "../auth.controller";
 import { AuthService } from "../auth.service";
 import { testUser } from "../__mocks__/user.mock";
 
-jest.mock("../auth.service");
+const userModel = jest.fn(() => ({
+	findOne: jest.fn(() => testUser()),
+	find: jest.fn(() => [testUser()]),
+	findById: jest.fn(() => testUser()),
+	deleteOne: jest.fn(),
+	populate: jest.fn(() => testUser()),
+}));
 
 describe("AuthController", () => {
 	let controller: AuthController;
@@ -13,7 +21,18 @@ describe("AuthController", () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [AuthController],
-			providers: [AuthService],
+			providers: [
+				{ provide: getModelToken(User.name), useValue: userModel },
+				{
+					provide: AuthService,
+					useFactory: jest.fn().mockReturnValue({
+						generateToken: jest.fn().mockReturnValue(sign({ id: "123456" }, "secret")),
+						register: jest.fn().mockResolvedValue(testUser()),
+						validateUser: jest.fn().mockResolvedValue(testUser()),
+						getUserByID: jest.fn().mockResolvedValue(testUser()),
+					}),
+				},
+			],
 		}).compile();
 
 		controller = module.get<AuthController>(AuthController);
@@ -36,7 +55,7 @@ describe("AuthController", () => {
 	});
 
 	it("Should validate a user and login", async () => {
-    const user = testUser() as UserDocument;
+		const user = testUser() as UserDocument;
 		const res = await service.validateUser(user);
 
 		expect(service.validateUser).toHaveBeenCalledWith(user);
