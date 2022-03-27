@@ -47,7 +47,7 @@ export class AuthService {
 	async validateUser(data: LoginDTO) {
 		try {
 			const user = await this.userService.findByEmail(data.email);
-
+			
 			if (await compare(data.password, user.password)) {
 				return user;
 			}

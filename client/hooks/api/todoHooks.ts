@@ -83,7 +83,7 @@ function createTodoHook<V>(mutationFn: MutationFunction<Todo, V>) {
 }
 
 export const useAddTodoLabelMutation = createTodoHook<LabelDTO>(fetchAddLabel);
-export const useRemoveTodoLabelMutation = createTodoHook<LabelDTO>(fetchRemoveLabel);
 export const useAddTodoListMutation = createTodoHook<ListDTO>(fetchAddList);
+export const useRemoveTodoLabelMutation = createTodoHook<LabelDTO>(fetchRemoveLabel);
 export const useRemoveTodoListMutation = createTodoHook<LabelDTO>(fetchRemoveList);
 export const useSetTodoStatusMutation = createTodoHook<SetStatusDTO>(fetchSetStatus);
