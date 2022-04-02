@@ -6,8 +6,7 @@ import { useUserQuery } from "../../hooks/api/authHooks";
 import { useCreateTodoMutation } from "../../hooks/api/todoHooks";
 import { useCreateLabelMutation, useCreateListMutation } from "../../hooks/api/userHooks";
 import { useAppStore } from "../../stores/useAppStore";
-
-const firstCharToUpper = (str: string) => str[0].toUpperCase() + str.substring(1, str.length);
+import { firstCharToUpper } from "../../utils/stringUtils";
 
 const mapSelectItems = (array: string[]): SelectItem[] => {
 	return array.map((value) => ({ value, label: firstCharToUpper(value) }));
@@ -17,8 +16,6 @@ export const CreateTodoModal: FC = () => {
 	const toggleCreateTodoModal = useAppStore((state) => state.toggleCreateTodoModal);
 	const isCreateTodoModalOpen = useAppStore((state) => state.isCreateTodoModalOpen);
 
-	const { data: user } = useUserQuery(true);
-
 	const [opened, handlers] = useDisclosure(false, {
 		onOpen: toggleCreateTodoModal,
 		onClose: toggleCreateTodoModal,
@@ -27,12 +24,17 @@ export const CreateTodoModal: FC = () => {
 	const [name, setName] = useInputState("");
 	const [content, setContent] = useInputState("");
 	const [dueDate, setDueDate] = useInputState(new Date());
-	const [labels, setLabels] = useInputState<SelectItem[]>(mapSelectItems(user?.labels ?? []));
-	const [lists, setLists] = useInputState<SelectItem[]>(mapSelectItems(user?.labels ?? []));
+	const [labels, setLabels] = useInputState<SelectItem[]>([]);
+	const [lists, setLists] = useInputState<SelectItem[]>([]);
 
 	const createTodo = useCreateTodoMutation();
 	const createLabel = useCreateLabelMutation();
 	const createList = useCreateListMutation();
+
+	const { data: user } = useUserQuery(true, (user) => {
+		setLabels(mapSelectItems(user.labels ?? []));
+		setLists(mapSelectItems(user.lists ?? []));
+	});
 
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -47,12 +49,16 @@ export const CreateTodoModal: FC = () => {
 		});
 	};
 
-	const onLabelCreation = (label: string) => {
+	const onLabelCreation = (l: string) => {
+		const label = l.trim();
+
 		setLabels([...labels, { value: label, label: firstCharToUpper(label) }]);
 		createLabel.mutate(label);
 	};
 
-	const onListCreation = (list: string) => {
+	const onListCreation = (l: string) => {
+		const list = l.trim();
+
 		setLists([...lists, { value: list, label: firstCharToUpper(list) }]);
 		createList.mutate(list);
 	};
@@ -64,7 +70,7 @@ export const CreateTodoModal: FC = () => {
 					<Group grow direction="column" spacing={35}>
 						<Group spacing={10} grow>
 							<TextInput required value={name} onChange={setName} label="Name:" />
-							<DatePicker value={dueDate} onChange={setDueDate} label="Due Date:" />
+							<DatePicker firstDayOfWeek="sunday" value={dueDate} onChange={setDueDate} label="Due Date:" />
 						</Group>
 						<Group grow>
 							<Textarea autosize maxRows={13} value={content} onChange={setContent} label="Content:" />

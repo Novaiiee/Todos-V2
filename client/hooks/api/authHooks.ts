@@ -7,6 +7,7 @@ import { fetchLogin, fetchLoginWithGoogle, fetchRegister, fetchUser } from "../.
 import { client } from "../../services/react-query";
 import { useAppStore } from "../../stores/useAppStore";
 import { useErrorStore } from "../../stores/useErrorStore";
+import { User } from "../../types/user";
 
 export function useLoginMutation() {
 	const notifications = useNotifications();
@@ -73,9 +74,10 @@ export function useRegisterMutation() {
 	});
 }
 
-export function useUserQuery(enabled = false) {
+export function useUserQuery(enabled = false, onSuccess?: (data: User) => void) {
 	return useQuery(["user"], {
 		queryFn: (a) => fetchUser(),
+		onSuccess,
 		enabled,
 	});
 }

@@ -1,4 +1,4 @@
-import { Controller, Param, Post, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { CurrentUser } from "../auth/decorators/user.decorator";
 import { JwtGuard } from "../auth/guards/jwt.guard";
 import { UserDocument } from "./user.schema";
@@ -21,6 +21,22 @@ export class UserController {
 	async createList(@Param("list") list: string, @CurrentUser() user: UserDocument) {
 		return {
 			user: await this.userService.createList(list, user),
+		};
+	}
+
+	@Get("/lists")
+	@UseGuards(JwtGuard)
+	async getLists(@CurrentUser() user: UserDocument) {
+		return {
+			list: user.lists,
+		};
+	}
+
+	@Get("/labels")
+	@UseGuards(JwtGuard)
+	async getLabels(@CurrentUser() user: UserDocument) {
+		return {
+			list: user.labels,
 		};
 	}
 }

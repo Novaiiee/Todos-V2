@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { UserDocument } from "../user/user.schema";
 import { ChangeDueDateDTO } from "./dto/change-date.dto";
 import { CreateTodoDTO } from "./dto/create-todo.dto";
@@ -94,7 +94,7 @@ export class TodoService {
 	}
 
 	async setTodoStatus(data: SetStatusDTO, user: UserDocument) {
-		const todo = await this.todoModel.findOne({ user: user.id, id: data.id });
+		const todo = await this.todoModel.findOne({ user: user.id, _id: new Types.ObjectId(data.id) });
 
 		if (!todo) {
 			throw new NotFoundException("Todo not found");

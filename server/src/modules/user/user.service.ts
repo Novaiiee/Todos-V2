@@ -43,7 +43,7 @@ export class UserService {
 	}
 
 	async createList(list: string, user: UserDocument) {
-		user.lists = Array.from(new Set([...user.labels, list]));
+		user.lists = Array.from(new Set([...user.lists, list]));
 		return user.save();
 	}
 }

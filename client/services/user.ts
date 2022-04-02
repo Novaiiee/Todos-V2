@@ -11,6 +11,6 @@ export const fetchCreateLabel = async (label: string) => {
 };
 
 export const fetchCreateList = async (list: string) => {
-	const res = await axios.post<UserAuthResponse>(`/user/list/${list}}`);
+	const res = await axios.post<UserAuthResponse>(`/user/list/${list}`);
 	return res.data;
 };
